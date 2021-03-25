@@ -1,0 +1,13 @@
+{
+    "name": "root/dev",
+    "require": {
+        "symfony/workflow": "^5.2",
+        "symfony/event-dispatcher": "^5.2"
+    },
+    "authors": [
+        {
+            "name": "Wojciech Pirog",
+            "email": "voytechp@gmail.com"
+        }
+    ]
+}
