@@ -24,18 +24,34 @@ use Symfony\Component\Workflow\Workflow;
 $order = new Order(1);
 
 $dispatcher = new EventDispatcher();
-$dispatcher->addSubscriber($subscriber = new OrderWorkflowSubscriber());
+$dispatcher->addSubscriber(new OrderWorkflowSubscriber());
 
 $orderWorkflow = OrderWorkflow::getWorkflow($dispatcher);
 
+$items = [
+    new Product('Banana', 2),
+    new Product('Apple', 1.5),
+    new Product('Blueberries', 1.0)
+];
+
 // Apply a transition
-transition($orderWorkflow, $order, OrderWorkflow::TRANSITION_UPDATE_ITEM);
-canTransitionToDelivered($orderWorkflow, $order);
+$transition = transition($orderWorkflow, $order, OrderWorkflow::TRANSITION_UPDATE_ITEM);
 
-transition($orderWorkflow, $order, OrderWorkflow::TRANSITION_CONFIRM_ORDER);
-transition($orderWorkflow, $order, OrderWorkflow::TRANSITION_ASSIGN_PICKER);
+if ($transition) {
+    $order->setItems($items);
+}
 
-canTransitionToDelivered($orderWorkflow, $order);
+$transition = transition($orderWorkflow, $order, OrderWorkflow::TRANSITION_CONFIRM_ORDER);
+
+if ($transition) {
+    $order->setCustomer(new Customer('John Smith'));
+}
+
+$transition = transition($orderWorkflow, $order, OrderWorkflow::TRANSITION_ASSIGN_PICKER);
+
+if ($transition) {
+    $order->setPicker(new Picker('Jane McTest'));
+}
 
 function transition(Workflow $orderWorkflow, Order $order, string $transition)
 {

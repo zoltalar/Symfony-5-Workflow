@@ -10,9 +10,11 @@ class OrderWorkflowSubscriber implements EventSubscriberInterface
     public function onLeave(Event $event)
     {
         echo (sprintf(
-            'Order (id: %s) performed transition "%s"',
+            'Order (id: %s) performed transition "%s" from "%s" to "%s"',
             $event->getSubject()->getId(),
-            $event->getTransition()->getName()
+            $event->getTransition()->getName(),
+            implode(', ', array_keys($event->getMarking()->getPlaces())),
+            implode(', ', $event->getTransition()->getTos())
         ));
 
         echo "<br>";
