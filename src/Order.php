@@ -2,9 +2,11 @@
 
 namespace App;
 
+use Symfony\Component\Workflow\MarkingStore\MethodMarkingStore;
+
 class Order
 {
-    public $state;
+    private $state;
     public $customer;
     public $picker;
     public $items;
@@ -16,6 +18,13 @@ class Order
 
     public function setState($state)
     {
+        $expectedClass = MethodMarkingStore::class;
+        $callerClass = debug_backtrace()[1]['class'] ?? debug_backtrace()[0]['class'] ?? '';
+
+        if ($expectedClass != $callerClass) {
+            throw new \Exception('Order state can only be set from workflow');
+        }
+
         $this->state = $state;
     }
 }

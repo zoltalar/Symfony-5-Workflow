@@ -1,10 +1,5 @@
 <?php
 
-// declare(strict_types = 1);
-
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 require 'vendor/autoload.php';
 require 'src/Order.php';
 require 'src/OrderWorkflow.php';
@@ -28,13 +23,13 @@ canTransitionToDelivered($orderWorkflow, $order);
 function transition(Workflow $orderWorkflow, Order $order, string $transition)
 {
     $orderWorkflow->apply($order, $transition);
-    echo ('<br>Transitioned to: ' . $order->getState());
+    echo ('Transitioned to: ' . $order->getState() . '<br>');
 }
 
 function canTransitionToDelivered(Workflow $orderWorkflow, Order $order)
 {
     $canTransitionToDelivered = $orderWorkflow->can($order, OrderWorkflow::TRANSITION_CONFIRM_DELIVERY);
-    echo ('<br>Can transition to delivery: '); var_dump($canTransitionToDelivered);
+    echo ('Can transition to delivery: '); var_dump($canTransitionToDelivered); echo '<br>';
 
     return $canTransitionToDelivered;
 }
