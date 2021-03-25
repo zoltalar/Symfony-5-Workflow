@@ -21,7 +21,7 @@ class Product
         $this->name;
     }
 
-    public function setName($name)
+    public function setName($name): self
     {
         $this->name = $name;
 
@@ -33,7 +33,7 @@ class Product
         return $this->price;
     }
 
-    public function setPrice($price)
+    public function setPrice($price): self
     {
         $this->price = $price;
 
