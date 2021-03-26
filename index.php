@@ -9,6 +9,7 @@ require 'src/Customer.php';
 require 'src/Order.php';
 require 'src/OrderWorkflow.php';
 require 'src/OrderWorkflowSubscriber.php';
+require 'src/OrderService.php';
 require 'src/Picker.php';
 require 'src/Product.php';
 
@@ -16,6 +17,7 @@ use App\Customer;
 use App\Order;
 use App\OrderWorkflow;
 use App\OrderWorkflowSubscriber;
+use App\OrderService;
 use App\Picker;
 use App\Product;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -27,6 +29,7 @@ $dispatcher = new EventDispatcher();
 $dispatcher->addSubscriber(new OrderWorkflowSubscriber());
 
 $orderWorkflow = OrderWorkflow::getWorkflow($dispatcher);
+$orderService = new OrderService($orderWorkflow, $order);
 
 $items = [
     new Product('Banana', 2),
@@ -34,37 +37,7 @@ $items = [
     new Product('Blueberries', 1.0)
 ];
 
-// Apply a transition
-$transition = transition($orderWorkflow, $order, OrderWorkflow::TRANSITION_UPDATE_ITEM);
-
-if ($transition) {
-    $order->setItems($items);
-}
-
-$transition = transition($orderWorkflow, $order, OrderWorkflow::TRANSITION_CONFIRM_ORDER);
-
-if ($transition) {
-    $order->setCustomer(new Customer('John Smith'));
-}
-
-$transition = transition($orderWorkflow, $order, OrderWorkflow::TRANSITION_ASSIGN_PICKER);
-
-if ($transition) {
-    $order->setPicker(new Picker('Jane McTest'));
-}
-
-function transition(Workflow $orderWorkflow, Order $order, string $transition)
-{
-    if ( ! $orderWorkflow->can($order, $transition)) {
-        return false;
-    }
-
-    $orderWorkflow->apply($order, $transition);
-
-    return true;
-}
-
-function canTransitionToDelivered(Workflow $orderWorkflow, Order $order)
-{
-    return $orderWorkflow->can($order, OrderWorkflow::TRANSITION_CONFIRM_DELIVERY);
-}
+$orderService->updateItems($items);
+$orderService->updateCustomer(new Customer('John Smith'));
+$orderService->confirmOrder();
+$orderService->updatePicker(new Picker('Jane McTest'));
